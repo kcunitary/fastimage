@@ -1,7 +1,7 @@
 import asyncio
 from io import BytesIO
 import struct
-
+#import async_timeout
 import aiohttp
 
 # Some help from:
@@ -30,10 +30,10 @@ class ImageCollector:
             raise DownloadError(msg)
 
     async def _collect(self):
-        with aiohttp.Timeout(10):
-            async with aiohttp.ClientSession() as session:
-                async with session.get(self.url) as response:
-                    await self._parse(response)
+        timeout = aiohttp.ClientTimeout(total=10)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(self.url) as response:
+                await self._parse(response)
 
     async def _parse(self, response):
         body = bytes()
